@@ -35,15 +35,15 @@
 
 %token <sval> INTEGER_VAL FLOAT_VAL TRUE FALSE NULLPOINTER BREAK CONTINUE RETURN
 %token <sval> SCOLON FUNC STRUCT ELSE PACKAGE IF FOR RANGE IMPORT VAR SWITCH CASE NEW CONST MAP DEFAULT
-%token <sval> MAKE GOTO FALLTHROUGH TYPE PLUSPLUS MINUSMINUS ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR 
+%token <sval> MAKE GOTO FALLTHROUGH TYPE PLUSPLUS MINUSMINUS ANDNOT ELIPSIS ADD SUB NOT XOR MUL AND OR
 %token <sval> LOGOR LOGAND ISEQ NEQ LESSEQ GRTEQ GRT LESS MOD QUOT SHL SHR EQ INFER_EQ RIGHTPARAN RIGHTBRACE RIGHTSQUARE
 %token <sval> LEFTPARAN LEFTBRACE LEFTSQUARE COLON DOT COMMA RAW_STRING INTERPRETED_STRING BYTE_VAL IDENTIFIER
-%token <sval> ASSGN_OP 
+%token <sval> ASSGN_OP
 
 %type <nt> SourceFile Expression
 %type <nt> Block StatementList Statement SimpleStmt EmptyStmt ExpressionStmt IncDecStmt MapType
 %type <nt> Assignment ShortVarDecl Declaration VarSpec PackageName
-%type <nt> Signature Result Parameters ParameterList ParameterDecl 
+%type <nt> Signature Result Parameters ParameterList ParameterDecl
 %type <nt> MethodDecl Receiver TopLevelDecl LabeledStmt
 %type <nt> ReturnStmt BreakStmt ContinueStmt GotoStmt FallthroughStmt StructType
 %type <nt> FunctionBody ForStmt RangeClause
@@ -57,7 +57,7 @@
 %type <nt> PackageClause ImportDeclList ImportDecl ImportSpecList TopLevelDeclList
 %type <nt> FieldDeclList FieldDecl MakeExpr StructLiteral KeyValueList Type BaseType
 %type <nt> PointerType IdentifierList AliasDecl TypeDef
-%type <nt> VarSpecList TypeList 
+%type <nt> VarSpecList TypeList
 %left LOGOR
 %left LOGAND
 %left ISEQ NEQ GRTEQ GRT LESSEQ LESS
@@ -185,7 +185,7 @@ ImportPath:
 	;
 
 TopLevelDeclList:
-	TopLevelDeclList TopLevelDecl SCOLON  { 
+	TopLevelDeclList TopLevelDecl SCOLON  {
 		Node* curr = new Node("TopLevelDeclList");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($2);
@@ -193,7 +193,7 @@ TopLevelDeclList:
 		(curr->last_current_node_data())->next_data = $2->current_node_data;
 		$$ = curr;
 	}
-	| TopLevelDecl SCOLON { 
+	| TopLevelDecl SCOLON {
 		Node* curr = new Node("TopLevelDeclList");
 		curr->add_non_terminal_children($1);
 		$$ = curr;
@@ -228,7 +228,7 @@ TopLevelDecl:
 Block:
     LEFTBRACE OpenBlock StatementList CloseBlock RIGHTBRACE {
     	Node* curr = new Node("Block");
-		curr->add_non_terminal_children($3); 
+		curr->add_non_terminal_children($3);
 		curr->current_type = $3->current_type;
 		curr->current_node_data = $3->current_node_data;
 		$$ = curr;
@@ -259,7 +259,7 @@ StatementList:
 		$$->current_node_data = new NodeData("list");
 		if(!$1->current_node_data){
 			cout<<"NO AST found here! Exiting........";
-			exit(1);	
+			exit(1);
 		}
 		$$->current_node_data->node_child = $1->current_node_data;
 	}
@@ -377,14 +377,14 @@ Declaration:
 FunctionDecl:
 	FUNC IDENTIFIER OpenBlock Signature FunctionBody CloseBlock {
 		st->add_in_symbol_table({st->get_current_scope(),string($2)},$4->current_type);
-	
+
 		Node* curr = new Node("FunctionDecl");
 		curr->add_terminal_children(string($2));
 		curr->add_non_terminal_children($4);
 		curr->add_non_terminal_children($5);
 		$$ = curr;
 		$$-> current_node_data = new NodeData("Function" + string($2));
-		$$-> current_node_data->node_child = $5->current_node_data; 
+		$$-> current_node_data->node_child = $5->current_node_data;
 
 	}
 	| FUNC IDENTIFIER OpenBlock Signature CloseBlock  {
@@ -411,7 +411,7 @@ MethodDecl:
 		curr->add_terminal_children(string($3));
 		curr->add_non_terminal_children($4);
 		$$=curr;
-	} 
+	}
 	;
 
 LabeledStmt:
@@ -443,7 +443,7 @@ SimpleStmt:
 		$$->add_non_terminal_children($1);
 		$$->current_type = $1->current_type;
 		$$->current_node_data = $1->current_node_data;
-	} 
+	}
 	| Assignment {
 		$$ = new Node("SimpleStmt");
 		$$->add_non_terminal_children($1);
@@ -562,7 +562,7 @@ ShortVarDecl:
 		DataType* right_type = $3->current_type;
 
 		bool newVar = false;
-		
+
 		while(left_data || right_type){
 			if(!left_data || !right_type){
 				cout<<"[unpacking error], '=' operator expected same number of operands on LHS and RHS";
@@ -628,7 +628,7 @@ VarDecl:
 		$$->current_type = $3->current_type;
 		$$->current_node_data = $3->current_node_data;
 	}
-	//| VAR LEFTPARAN RIGHTPARAN {;} // might change, as effectivly of no use 
+	//| VAR LEFTPARAN RIGHTPARAN {;} // might change, as effectivly of no use
 	;
 
 // Might change, not defined
@@ -687,8 +687,8 @@ VarSpec:
 		parLeft->node_child = $1->current_node_data;
 		parRight -> node_child = $4->current_node_data;
 		parLeft -> next_data = parRight;
-		$$->current_node_data = new NodeData("=");	
-		$$->current_node_data->node_child = parLeft;	
+		$$->current_node_data = new NodeData("=");
+		$$->current_node_data->node_child = parLeft;
 	}
 	| IdentifierList ASSGN_OP ExpressionList {
 		$$ = new Node("VarSpec");
@@ -740,10 +740,10 @@ VarSpec:
 		parLeft->node_child = $1->current_node_data;
 		parRight -> node_child = $3->current_node_data;
 		parLeft -> next_data = parRight;
-		$$->current_node_data = new NodeData(":=");	
+		$$->current_node_data = new NodeData(":=");
 		$$->current_node_data->node_child = parLeft;
 
-	}	
+	}
 	;
 
 ConstDecl:
@@ -830,8 +830,8 @@ Signature:
 			curr=curr->next_type;
 		}
 
-		$$ -> current_type = new FunctionType(arguments,return_types);	
-	} 
+		$$ -> current_type = new FunctionType(arguments,return_types);
+	}
 	;
 
 Result:
@@ -938,7 +938,7 @@ IdentifierList:
 		$$->add_terminal_children(string($3));
         ($1->last_current_node_data())->next_data = new NodeData(string($3));
         ($1->last_current_type())->next_type = (st->get_type(string($3)))?(st->get_type(string($3))):(new BasicType("undefined"));
-        
+
         $$->current_type = $1->current_type;
         $$->current_node_data = $1->current_node_data;
 	}
@@ -960,7 +960,7 @@ Receiver:
 CompositeLit:
 	LiteralType LiteralValue {
         $$ = new Node("CompositeLit");
-        
+
     }
 	;
 
@@ -1014,10 +1014,10 @@ Type:
 		$$->add_non_terminal_children($1);
 		$$->current_type = new BasicType(string($1 -> current_node_data -> data_name));
 		$$->current_node_data = new NodeData($$->current_type->getDataType());
-	}	
+	}
 	;
 
-Operand:	
+Operand:
 	Literal {
 		$$ = new Node("Operand");
 		$$->add_non_terminal_children($1);
@@ -1045,7 +1045,7 @@ OperandName:
 		$$->current_node_data->value = true;
 		$$->current_type = st->get_type(string($1))?st->get_type(string($1)):new BasicType("undefined");
 
-	}	
+	}
 	;
 
 LiteralValue:
@@ -1320,26 +1320,71 @@ Expression:
 		}
 	;
 
+// remaining: Please check if this is correct. This is my first time writing code. me noob so much.
 UnaryExpr:
-	MUL UnaryExpr { 
+	MUL UnaryExpr {
+		Node* curr = new Node("UnaryExpr");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+// remaining: Please check if this datatype correct. In all unary expressions!
+		curr->current_type = $2->current_type;
+		curr->current_node_data = new NodeData("unary " + string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
-	| AND UnaryExpr { 
+	| AND UnaryExpr {
+		Node* curr = new Node("UnaryExpr");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+// remaining: Please check if this datatype correct. In all unary expressions!
+		curr->current_type = $2->current_type;
+		curr->current_node_data = new NodeData("unary " + string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
-	| ADD UnaryExpr { 
+	| ADD UnaryExpr {
+		Node* curr = new Node("UnaryExpr");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+// remaining: Please check if this datatype correct. In all unary expressions!
+		curr->current_type = $2->current_type;
+		curr->current_node_data = new NodeData("unary " + string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
-	| SUB UnaryExpr { 
+	| SUB UnaryExpr {
+		Node* curr = new Node("UnaryExpr");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+// remaining: Please check if this datatype correct. In all unary expressions!
+		curr->current_type = $2->current_type;
+		curr->current_node_data = new NodeData("unary " + string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
-	| NOT UnaryExpr { 
+	| NOT UnaryExpr {
+		Node* curr = new Node("UnaryExpr");
+		curr->add_terminal_children($1);
+		curr->add_non_terminal_children($2);
+// remaining: Please check if this datatype correct. In all unary expressions!
+		curr->current_type = $2->current_type;
+		curr->current_node_data = new NodeData("unary " + string($1));
+		curr->current_node_data->node_child = $2->current_node_data;
+		$$ = curr;
 		//cout<<"UnaryExpr "<<$1<<" "<<$2<<endl;
 		}
 	| PrimaryExpr {
+		Node* curr = new Node("PrimaryExpr");
+		curr->current_type = $1->current_type;
+		curr->current_node_data = $1->current_node_data;
+		curr = $$;
 		//cout<<"Primary begins from unary\n";
 		}
- 	
+
  	;
 
 // remaining isValidMemberon()
@@ -1395,7 +1440,7 @@ StructLiteral:
 		Node* curr = new Node("StructLiteral");
 		curr->add_non_terminal_children($2);
 		$$ = curr;
-	} 
+	}
 	;
 
 KeyValueList :
@@ -1404,18 +1449,18 @@ KeyValueList :
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($3);
 		$$ = curr;
-	} 
+	}
  	| Expression COLON Expression COMMA KeyValueList {
 		Node* curr = new Node("KeyValueList");
 		curr->add_non_terminal_children($1);
 		curr->add_non_terminal_children($3);
 		curr->add_non_terminal_children($5);
 		$$ = curr;
-	} 
+	}
  	;
 
 
-Selector : 
+Selector :
 	DOT IDENTIFIER {
 		Node* curr = new Node("Selector");
 		curr->add_terminal_children($2);
@@ -1423,7 +1468,7 @@ Selector :
 		curr->current_node_data = new NodeData(string($2));
 
 		$$ = curr;
-	} 
+	}
 	;
 
 Index:
@@ -1435,7 +1480,7 @@ Index:
 		curr->current_node_data = $2->current_node_data;
 
 		$$ = curr;
-	} 
+	}
 	;
 
 Slice:
@@ -1554,9 +1599,9 @@ Arguments:
 		$$ = curr;
 	}
 	;
-	
+
 // remaining
-ExpressionList: 
+ExpressionList:
 	Expression {
 		Node* curr = new Node("ExpressionList");
 		curr->add_non_terminal_children($1);
@@ -1681,7 +1726,7 @@ FieldDeclList:
 //		tp->next = NULL;
 
 		NodeData* lp = $1->current_node_data;
-		
+
 
 
 		$$ = curr;
@@ -1701,7 +1746,7 @@ PointerType:
 
 
 		$$ = curr;
-	} 
+	}
 	;
 
 BaseType:
@@ -1713,7 +1758,7 @@ BaseType:
 		curr->current_node_data = $1->current_node_data;
 
 		$$ = curr;
-	} 
+	}
 	;
 // Remaining
 ArrayType:
@@ -1726,7 +1771,7 @@ ArrayType:
 		 }
 		 $$ = curr;
 		 }
-	
+
 
 Literal:
 	BasicLit {
@@ -1805,12 +1850,12 @@ String:
 
 
 
-	
+
 
 int main (int argc, char **argv) {
-	
+
 	yyin = fopen(argv[1], "r");	//taking input as argument
 	yyparse ( );
 	cout<<"THE GIVEN FILE WAS PARSABLE \n";
-		
+
 }
