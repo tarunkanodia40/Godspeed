@@ -379,14 +379,14 @@ Declaration:
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
 	}
-	| ConstDecl  {
+	/* | ConstDecl  {
 		// might change
 		Node* curr = new Node("Declaration");
 		curr->add_non_terminal_children($1);
 		curr->current_type = $1->current_type;
 		curr->current_node_data = $1->current_node_data;
 		$$ = curr;
-	}
+	} */
 	;
 
 FunctionDecl:
@@ -1344,6 +1344,7 @@ RangeClause:
 
 	}
 	;
+//remaining: Please add operatorResult function results in here!!!! VV IMP.
 Expression:
 	Expression MUL Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
@@ -1379,14 +1380,67 @@ Expression:
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 		}
 	| Expression LOGAND Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		Node* curr = new Node("Logical AND Expr");
+		curr->add_non_terminal_children($1);
+		curr->add_terminal_children(string($2));
+		curr->add_non_terminal_children($3);
+		curr->current_node_data  = new NodeData(string($2) + " binary");
+		curr->current_node_data->node_child = $1->current_node_data;
+// remaining: What is the type of curr?? This applies to all expressions!
+		curr->current_node_data->node_child->last_next_child()->next_data = $3->current_node_data;
+		if($1->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
+		}
+		if($2->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$2->current_node_data->data_name<<"\n";
+			exit(1);
+		}
+		if($1->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
+		}
+		if(($1->current_type->getDataType() != $3->current_type->getDataType()) && ($1->current_type->getDataType() == "NULL"))
+		{
+
+			cout<<"Type Mismatch at "<<$1->current_node_data->data_name<<" "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
+		}
 		}
 	| Expression LOGOR Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		Node* curr = new Node("Logical OR Expr");
+		curr->add_non_terminal_children($1);
+		curr->add_terminal_children(string($2));
+		curr->add_non_terminal_children($3);
+		curr->current_node_data  = new NodeData(string($2) + " binary");
+		curr->current_node_data->node_child = $1->current_node_data;
+		curr->current_node_data->node_child->last_next_child()->next_data = $3->current_node_data;
+		if($1->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
 		}
-	| Expression ISEQ Expression {
-		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
+		if($2->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$2->current_node_data->data_name<<"\n";
+			exit(1);
 		}
+		if($1->current_type == NULL)
+		{
+			cout<<"Missing type information in node "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
+		}
+		if(($1->current_type->getDataType() != $3->current_type->getDataType()) && ($1->current_type->getDataType() == "NULL"))
+		{
+
+			cout<<"Type Mismatch at "<<$1->current_node_data->data_name<<" "<<$1->current_node_data->data_name<<"\n";
+			exit(1);
+		}
+		}
+	| Expression ISEQ Expression {;}
 	| Expression NEQ Expression {
 		//cout<<"Express: "<<$1<<" "<<$2<<" "<<$3<<endl;
 		}
